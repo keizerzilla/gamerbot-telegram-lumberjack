@@ -1,3 +1,9 @@
+# Gamerbot #01: Telegram LumberJack
+
+## RESUMO
+
+Eu fiquei irritado por não bater o record de um amigo num jogo para crianças e escrevi um bot que fez todo o trabalho sujo por mim.
+
 ## INTRODUÇÃO
 
 Um dos motivos para o Telegram ser meu mensageiro favorito é a quantidade de opções ricas de iteração que ele oferece, como bots e super-grupos. Entretanto, uma *feature* subutilizada desse aplicativo é a interface de jogos. O Telegram oferece um *framework* de criação de jogos em HTML5 e um sistema de persistência de pontuação. A iteração com o usuário deve ser feita mediante a API de bots; opções como criar nova partida, desafiar um amigo e ver a pontuação salva estão entre as opções mais comuns.
@@ -31,7 +37,7 @@ A Figura abaixo mostra todas as regiões de interesse do bot: as que ele vê e a
 
 ![Artefatos na imagem vistos/controlados pelo bot](https://i.imgur.com/9Np1hGH.png)
 
-Só precisamos nos preocupar com a região logo acima do lenhador, portanto nos preocuparesmo apenas com os retângulos em vermelho com os símbolos de robozinho e olho; em azul temos as coordendas do canto superior esquerdo e nas linhas ao longo do retângulo esquerdo, as dimensões da região de interesse. O controle se dá com cliques nos dois botões abaixo da tela principal do jogo. As coordenadas do centro dos botões estão escritas próximo dos símbolos de robozinho e mouse. Todas essas regiões foram encontradas a partir de uma *screenshot* tirada do jogo e analisada num editor de imagens e anotadas a parte. Também com a ajuda do editor de imagens eu recortei apenas as imagens de um galho da esquerda e outro da direita, como na Figura a seguir.
+Só precisamos nos preocupar com a região logo acima do lenhador, portanto nos preocuparesmo apenas com os retângulos em vermelho com os símbolos de robozinho e olho; em azul temos as coordendas do canto superior esquerdo e nas linhas ao longo do retângulo esquerdo, as dimensões da região de interesse. O controle se dá com cliques nos dois botões abaixo da tela principal do jogo. As coordenadas do centro dos botões estão escritas próximo dos símbolos de robozinho e mouse. Todas essas regiões foram encontradas a partir de uma *screenshot* tirada do jogo e analisada num editor de imagens e anotadas a parte. Também com a ajuda do editor de imagens eu recortei apenas as imagens de um galho da esquerda (`left_branch.png`) e outro da direita (`right_branch.png`), como na Figura a seguir.
 
 ![Recorte do galhos para reconhecimento do padrão na imagem](https://i.imgur.com/t4wYxeJ.png)
 
@@ -80,7 +86,57 @@ Você deve ter notado que o laço não roda para sempre. Dois motivos para isso.
 
 ## OS RESULTADOS
 
-**continuar**
+O vídeo abaixo mostra o gamerbot em ação:
+
+[![O bot!!!](http://img.youtube.com/vi/9ZJq9pZGWrE/0.jpg)](http://www.youtube.com/watch?v=9ZJq9pZGWrE "Gamerbot Telegram LumberJack")
+
+Lindo, nê?
+
+Agora a pergunta que fica: por que ele morreu com 351 pontos se o laço principal deveria rodar pelo menos 1000 vezes? A resposta está nas velocidades da animação de corte e da barra de tempo: próximo aos 340 pontos, a velocidade que a barra de tempo descresce é mais rápida que a velocidade necessária para superar a animação de corte. Muito provavelmente os desenvolvedores do Telegram não esperavam que alguém chegasse tão longe, até porque esse joguinho tem o único objetivo de ser uma demonstração da plataforma de jogos. Se por um acaso você descobrir que eu estou errado, eu ficaria muito contente em ver esse bot turbinado! Use os *issues* deste repositório para mandar sua sugestão.
+
+Aqui vai o código completo com comentários. A versão do repositório (`gamerbot-telegram-lumberjack.py`) contém apenas linhas de código válidas.
+
+```python
+# A única biblioteca necessária
+# Instalação: pip3 install pyautogui opencv-python
+import pyautogui as pag
+
+# Um dicionário que guarda as configurações necessárias do jogo
+#   - click_x: coordenada x do botão
+#   - click_y: coordenada y do botão
+#   - branch: caminho para a imagem usada para reconhecimento de padrão
+#   - region: o retângulo que representa a região da tela que o bot enxerga
+config = {
+    "left" : {
+        "click_x" : 876,
+        "click_y" : 924,
+        "branch" : "left_branch.png",
+        "region" : (824, 575, 111, 69),
+    },
+    "right" : {
+        "click_x" : 1044,
+        "click_y" : 924,
+        "branch" : "right_branch.png",
+        "region" : (985, 575, 111, 69),
+    },
+}
+
+# Essa variável fica alternando o lado que o lenhador está
+c = config["right"]
+
+# Esse laço roda uma quantidade de vezes igual a quantos pontos você quer fazer
+# Entretanto, só é possível no máximo 351 pontos
+# Aos 340 pontos, a barra de tempo descresce mais rapidamente que o corte do lenhador
+for i in range(400):
+    if pag.locateOnScreen(c["branch"], grayscale=True, region=c["region"], confidence=0.9):
+        c = config["right"] if c == config["left"] else config["left"]
+    
+    pag.click(c["click_x"], c["click_y"])
+
+# Fim do jogo!
+print("Game Over")
+```
 
 ## CONCLUSÃO
 
+Espero que esse projetinho te ajude a pensar um pouco sobre como alguns bots funcionam! Essa brincadeira acabou sendo mais divertida do que eu imaginava. Fique à vontade para mandar sua dúvida, crítica e sugestão usando o sistema de *issues* do GitHub.
