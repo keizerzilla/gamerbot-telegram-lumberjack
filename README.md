@@ -46,7 +46,7 @@ Pronto, agora é implementar o bot. Essa parte foi a mais tranquila, visto que o
 Para automatizar o processo de intereção com a tela, tanto de visão quanto de controle, eu escolhi usar a biblioteca [PyAutoGUI](https://github.com/asweigart/pyautogui). Para ter um melhor resultado do método que análise a imagem e procura pelo padrão do galho, é necessário também instalar a versão Python da [OpenCV](https://pypi.org/project/opencv-python/). Você consegue instalar ambas usando `pip`:
 
 ```python
-pip3 install pyautogui opencv-python
+pip3 install --user pyautogui opencv-python
 ```
 
 ## A IMPLEMENTAÇÃO
